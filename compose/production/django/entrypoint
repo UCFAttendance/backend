@@ -19,6 +19,7 @@ start = time.time()
 client = boto3.client("secretsmanager", region_name="${AWS_REGION}")
 response = client.get_secret_value(SecretId="${ATTENDANCE_SECRET_ID}")
 secret = response["SecretString"]
+print("Secret retrieved from AWS Secrets Manager {}".format(secret))
 
 # Wait for the PostgreSQL to become available
 while True:
@@ -29,6 +30,7 @@ while True:
             password=secret,
             host="${POSTGRES_HOST}",
             port="${POSTGRES_PORT}",
+            sslmode="require",
         )
         break
     except psycopg.OperationalError as error:
