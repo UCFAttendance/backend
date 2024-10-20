@@ -4,6 +4,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+export DATABASE_URL="postgres://${POSTGRES_USER}:not_real_password@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 
 python << END
 import json
@@ -24,12 +25,6 @@ secret = json.loads(response["SecretString"])
 
 username = secret["username"]
 password = secret["password"]
-host = os.environ["POSTGRES_HOST"]
-port = os.environ["POSTGRES_PORT"]
-db_name = os.environ["POSTGRES_DB"]
-
-os.environ["DATABASE_URL"] = f"postgres://{username}:{password}@{host}:{port}/{db_name}"
-sys.stdout.write("DATABASE_URL has been set.\n")
 
 while True:
     try:
