@@ -306,7 +306,8 @@ REST_FRAMEWORK = {
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 FRONTEND_BASE_URL = env("DJANGO_FRONTEND_BASE_URL", default="http://localhost:3000")
-CORS_ALLOWED_ORIGINS = ["*"]  # TODO: Revert to [FRONTEND_BASE_URL] in production
+# CORS_ALLOWED_ORIGINS = [FRONTEND_BASE_URL]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # By Default swagger ui is available only to admin user(s). You can change permission classes to change that
 # See more configuration options at https://drf-spectacular.readthedocs.io/en/latest/settings.html#settings
