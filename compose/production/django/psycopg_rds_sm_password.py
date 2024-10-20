@@ -1,23 +1,34 @@
+import json
 import sys
 import time
+import os
 
-import psycopg
 import boto3
+import psycopg
 
 suggest_unrecoverable_after = 30
 start = time.time()
 
 # Get the secret from AWS Secrets Manager
-client = boto3.client("secretsmanager", region_name="${AWS_REGION}")
-response = client.get_secret_value(SecretId="${ATTENDANCE_SECRET_ID}")
-secret = response["SecretString"]
+client = boto3.client("secretsmanager", region_name=os.environ["AWS_REGION"])
+response = client.get_secret_value(SecretId=os.environ["ATTENDANCE_SECRET_ID"])
+secret = json.loads(response["SecretString"])
+
+username = secret["username"]
+password = secret["password"]
+host = os.environ["POSTGRES_HOST"]
+port = os.environ["POSTGRES_PORT"]
+db_name = os.environ["POSTGRES_DB"]
+
+os.environ["DATABASE_URL"] = f"postgres://{username}:{password}@{host}:{port}/{db_name}"
+sys.stdout.write("DATABASE_URL has been set.\n")
 
 while True:
     try:
         psycopg.connect(
             dbname="${POSTGRES_DB}",
-            user="${POSTGRES_USER}",
-            password=secret,
+            user=username,
+            password=password,
             host="${POSTGRES_HOST}",
             port="${POSTGRES_PORT}",
         )
