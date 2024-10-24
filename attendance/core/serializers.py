@@ -1,4 +1,5 @@
 from typing import Any
+import uuid
 
 import jwt
 from django.conf import settings
@@ -36,6 +37,10 @@ class SessionWriteSerializer(serializers.ModelSerializer):
         if value.teacher_id != self.context["request"].user:
             raise serializers.ValidationError("Course does not belong to you.")
         return value
+
+    def create(self, validated_data):
+        validated_data["salt"] = uuid.uuid4().hex
+        return super().create(validated_data)
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
