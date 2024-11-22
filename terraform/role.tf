@@ -36,6 +36,6 @@ resource "aws_iam_policy" "ecr_pull_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_pull_policy_attachment" {
-  role       = aws_iam_role.ecs_execution_role.name
+  role       = aws_iam_role.backend_execution_role.name
   policy_arn = aws_iam_policy.ecr_pull_policy.arn
 }
