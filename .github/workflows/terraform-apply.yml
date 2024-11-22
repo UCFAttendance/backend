@@ -1,6 +1,9 @@
 name: CI/CD Build and Deploy Docker Image
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch: # Allow manual triggers
 
 env:
