@@ -13,10 +13,12 @@ env:
   TF_WORKSPACE: "354918382277-backend"
   CONFIG_DIRECTORY: "terraform"
   AWS_REGION: "us-east-1"
-  ROLE_TO_ASSUME: "arn:aws:iam::354918382277:role/github-actions-ecr-push"
+  ROLE_NAME: "github-actions-ecr-push"
+  AWS_ACCOUNT_ID: "354918382277"
 
 jobs:
   build_and_deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
 
     permissions:
@@ -30,7 +32,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          role-to-assume: "arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.ROLE_NAME }}"
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Log in to Amazon ECR
@@ -39,12 +41,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t my-app:${{ github.sha }} -f ./compose/production/django/Dockerfile .
-          docker tag my-app:${{ github.sha }} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}:${{ github.sha }}
+          docker build -t backend:${{ github.sha }} -f ./compose/production/django/Dockerfile .
+          docker tag backend:${{ github.sha }} ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{env.AWS_REGION}}.amazonaws.com/${{env.REPOSITORY_NAME}}:${{ github.sha }}
 
       - name: Push Docker image to ECR
         run: |
-          docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}:${{ github.sha }}
+          docker push ${{env.AWS_ACCOUNT_ID}}.dkr.ecr.${{env.AWS_REGION}}.amazonaws.com/${{env.REPOSITORY_NAME}}:${{ github.sha }}
 
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
