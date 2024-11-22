@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t my-app:${{ github.sha }} .
+          docker build -t my-app:${{ github.sha }} -f ./compose/production/django/Dockerfile .
           docker tag my-app:${{ github.sha }} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}:${{ github.sha }}
 
       - name: Push Docker image to ECR
