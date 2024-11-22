@@ -278,3 +278,9 @@ attendance/media/
 .env
 .envs/*
 !.envs/.local/
+
+# Terraform
+.terraform/
+.terraform.tfstate
+.terraform.tfstate.backup
+.terraform.lock.hcl
