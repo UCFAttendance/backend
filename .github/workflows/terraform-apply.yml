@@ -12,7 +12,8 @@ env:
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: "354918382277-backend"
   CONFIG_DIRECTORY: "terraform"
-  REGION: "us-east-1"
+  AWS_REGION: "us-east-1"
+  ROLE_TO_ASSUME: "arn:aws:iam::354918382277:role/github-actions-ecr-push"
 
 jobs:
   build_and_deploy:
@@ -25,6 +26,9 @@ jobs:
       - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
 
       - name: Build Docker image
         run: |
