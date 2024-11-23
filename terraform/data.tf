@@ -31,15 +31,11 @@ data "aws_db_instance" "attendance_db" {
 }
 
 data "aws_s3_bucket" "attendance_static_bucket" {
-  bucket = data.terraform_remote_state.core-infra.outputs.attendance-images-bucket
-}
-
-data "aws_elasticache_cluster" "attendance_redis_cluster" {
-  cluster_id = data.terraform_remote_state.core-infra.outputs.redis-cluster-id
+  bucket = replace(data.terraform_remote_state.core-infra.outputs.attendance-images-bucket, "arn:aws:s3:::", "")
 }
 
 data "aws_elasticache_replication_group" "attendance_redis_replication_group" {
-  replication_group_id = data.aws_elasticache_cluster.attendance_redis_cluster.replication_group_id
+  replication_group_id = data.terraform_remote_state.core-infra.outputs.redis-cluster-id
 }
 
 # TODO: Replace admin_url and secret_key with secrets manager
