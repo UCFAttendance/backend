@@ -1,3 +1,24 @@
+locals {
+  environment_variables = {
+    DJANGO_SETTINGS_MODULE            = "config.settings.production",
+    DJANGO_SECURE_SSL_REDIRECT        = "False",
+    DJANGO_ACCOUNT_ALLOW_REGISTRATION = "True",
+    WEB_CONCURRENCY                   = "4",
+    DJANGO_AWS_STORAGE_BUCKET_NAME    = data.aws_s3_bucket.attendance_static_bucket.bucket,
+    DJANGO_MEDIA_BUCKET_NAME          = data.aws_s3_bucket.attendance_static_bucket.bucket,
+    DJANGO_ADMIN_URL                  = data.aws_ssm_parameter.admin_url.value,
+    DJANGO_SECRET_KEY                 = data.aws_ssm_parameter.secret_key.value,
+    SENTRY_DSN                        = data.aws_ssm_parameter.sentry_dns.value,
+    REDIS_URL                         = "redis://${data.aws_elasticache_replication_group.attendance_redis_replication_group.primary_endpoint_address}:${data.aws_elasticache_replication_group.attendance_redis_replication_group.port}",
+    DB_SECRET_ARN                     = data.aws_db_instance.attendance_db.master_user_secret[0].secret_arn,
+    POSTGRES_HOST                     = data.aws_db_instance.attendance_db.address,
+    POSTGRES_PORT                     = data.aws_db_instance.attendance_db.port,
+    POSTGRES_DB                       = data.aws_db_instance.attendance_db.db_name,
+    POSTGRES_USER                     = data.aws_db_instance.attendance_db.master_username,
+    AWS_REGION                        = var.aws_region,
+  }
+}
+
 resource "aws_ecs_task_definition" "attendance_backend" {
   family                   = "${local.app_prefix}-task-definition"
   requires_compatibilities = ["FARGATE"]
@@ -24,7 +45,13 @@ resource "aws_ecs_task_definition" "attendance_backend" {
           "awslogs-region"        = var.aws_region,
           "awslogs-stream-prefix" = "ecs"
         }
-      }
+      },
+      environment = [
+        for key, value in local.environment_variables : {
+          name  = key
+          value = value
+        }
+      ]
     }
   ])
 }

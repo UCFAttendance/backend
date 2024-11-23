@@ -29,7 +29,7 @@ ALLOWED_HOSTS = env.list(
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa: F405
 
 client = boto3.client("secretsmanager", region_name=os.environ["AWS_REGION"])
-response = client.get_secret_value(SecretId=os.environ["ATTENDANCE_SECRET_ID"])
+response = client.get_secret_value(SecretId=os.environ["DB_SECRET_ARN"])
 secret = json.loads(response["SecretString"])
 DATABASES["default"]["PASSWORD"] = secret["password"]  # noqa: F405
 
