@@ -30,6 +30,14 @@ resource "aws_iam_policy" "ecr_pull_policy" {
         ]
         Effect   = "Allow"
         Resource = data.aws_ecr_repository.attendance_backend.arn
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "arn:aws:logs:*:*:log-group:/ecs/${local.app_prefix}:*"
       }
     ]
   })

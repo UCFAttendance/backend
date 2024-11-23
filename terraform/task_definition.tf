@@ -16,7 +16,15 @@ resource "aws_ecs_task_definition" "attendance_backend" {
           containerPort = 80
           hostPort      = 80
         }
-      ]
+      ],
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.attendance_backend.name,
+          "awslogs-region"        = var.aws_region,
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ])
 }

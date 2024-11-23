@@ -68,4 +68,8 @@ resource "aws_ecs_service" "attendance_backend" {
     container_name   = "${local.app_prefix}-container"
     container_port   = 80
   }
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
 }
