@@ -23,21 +23,36 @@ resource "aws_iam_policy" "ecr_pull_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action = [
+        "Action" : [
           "ecr:GetAuthorizationToken",
           "ecr:BatchGetImage",
           "ecr:BatchCheckLayerAvailability"
         ]
-        Effect   = "Allow"
-        Resource = data.aws_ecr_repository.attendance_backend.arn
+        "Effect" : "Allow"
+        "Resource" : data.aws_ecr_repository.attendance_backend.arn
       },
       {
-        Effect = "Allow",
-        Action = [
+        "Effect" : "Allow",
+        "Action" : [
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
-        Resource = "arn:aws:logs:*:*:log-group:/ecs/${local.app_prefix}:*"
+        "Resource" : "arn:aws:logs:*:*:log-group:/ecs/${local.app_prefix}:*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ssm:GetParameter",
+          "ssm:GetParameters"
+        ],
+        "Resource" : "arn:aws:ssm:*:*:parameter/*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource" : "arn:aws:secretsmanager:*:*:secret:*"
       }
     ]
   })
