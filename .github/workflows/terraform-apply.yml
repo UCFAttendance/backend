@@ -58,11 +58,11 @@ jobs:
       - name: Create Apply Run
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.0
         id: apply-run
-        env:
-          TF_VAR_image_tag: ${{ github.sha }}
         with:
           workspace: ${{ env.TF_WORKSPACE }}
           configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+        env:
+          TF_VAR_image_tag: "${{ github.sha }}"
 
       - name: Apply
         uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
