@@ -8,7 +8,7 @@ resource "aws_ecs_task_definition" "attendance_backend" {
 
   container_definitions = jsonencode([
     {
-      name      = local.app_prefix
+      name      = "${local.app_prefix}-container"
       image     = "${data.aws_ecr_repository.attendance_backend.repository_url}:${var.image_tag}"
       essential = true
       portMappings = [
