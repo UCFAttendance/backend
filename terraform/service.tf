@@ -16,10 +16,11 @@ resource "aws_security_group" "service_lb_sg" {
 }
 
 resource "aws_lb_target_group" "app_target_group" {
-  name     = "${local.app_prefix}-target-group"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = data.terraform_remote_state.core-infra.outputs.vpc-id
+  name        = "${local.app_prefix}-target-group"
+  port        = 80
+  target_type = "ip"
+  protocol    = "HTTP"
+  vpc_id      = data.terraform_remote_state.core-infra.outputs.vpc-id
 }
 
 resource "aws_lb_listener_rule" "app_listener_rule" {
