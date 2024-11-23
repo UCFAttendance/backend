@@ -22,7 +22,6 @@ data "aws_lb_listener" "attendance_alb_443" {
   port              = 443
 }
 
-# repository-arn
 data "aws_ecr_repository" "attendance_backend" {
   name = data.terraform_remote_state.core-infra.outputs.backend-repository-name
 }

@@ -29,7 +29,7 @@ resource "aws_iam_policy" "ecr_pull_policy" {
           "ecr:BatchCheckLayerAvailability"
         ]
         Effect   = "Allow"
-        Resource = data.terraform_remote_state.core-infra.outputs.repository-arn
+        Resource = data.aws_ecr_repository.attendance_backend.arn
       }
     ]
   })
