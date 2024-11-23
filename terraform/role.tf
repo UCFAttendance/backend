@@ -15,9 +15,9 @@ resource "aws_iam_role" "backend_execution_role" {
   })
 }
 
-resource "aws_iam_policy" "ecr_pull_policy" {
-  name        = "ECRPullPolicy"
-  description = "Policy to allow ECS to pull from ECR"
+resource "aws_iam_policy" "ecs_task_execution_policy" {
+  name        = "ECSTaskExecutionPolicy"
+  description = "Policy to allow ECS task execution"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -29,7 +29,7 @@ resource "aws_iam_policy" "ecr_pull_policy" {
           "ecr:BatchCheckLayerAvailability"
         ]
         "Effect" : "Allow"
-        "Resource" : data.aws_ecr_repository.attendance_backend.arn
+        "Resource" : "*"
       },
       {
         "Effect" : "Allow",
@@ -38,27 +38,12 @@ resource "aws_iam_policy" "ecr_pull_policy" {
           "logs:PutLogEvents"
         ],
         "Resource" : "arn:aws:logs:*:*:log-group:/ecs/${local.app_prefix}:*"
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "ssm:GetParameter",
-          "ssm:GetParameters"
-        ],
-        "Resource" : "arn:aws:ssm:*:*:parameter/*"
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "secretsmanager:GetSecretValue"
-        ],
-        "Resource" : "arn:aws:secretsmanager:*:*:secret:*"
       }
     ]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecr_pull_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy_attachment" {
   role       = aws_iam_role.backend_execution_role.name
-  policy_arn = aws_iam_policy.ecr_pull_policy.arn
+  policy_arn = aws_iam_policy.ecs_task_execution_policy.arn
 }
