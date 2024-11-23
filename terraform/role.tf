@@ -25,11 +25,18 @@ resource "aws_iam_policy" "ecs_task_execution_policy" {
       {
         "Action" : [
           "ecr:GetAuthorizationToken",
-          "ecr:BatchGetImage",
-          "ecr:BatchCheckLayerAvailability"
         ]
         "Effect" : "Allow"
         "Resource" : "*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+        ],
+        "Resource" : data.aws_ecr_repository.attendance_backend.arn
       },
       {
         "Effect" : "Allow",
