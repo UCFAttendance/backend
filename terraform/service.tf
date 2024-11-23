@@ -13,6 +13,13 @@ resource "aws_security_group" "service_lb_sg" {
     protocol        = "tcp"
     security_groups = data.aws_lb.attendance_alb.security_groups
   }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_lb_target_group" "app_target_group" {
