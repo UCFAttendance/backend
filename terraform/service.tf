@@ -58,7 +58,7 @@ resource "aws_ecs_service" "attendance_backend" {
   }
 
   network_configuration {
-    subnets          = data.terraform_remote_state.core-infra.outputs.private-subnet-ids
+    subnets          = data.terraform_remote_state.core-infra.outputs.public-subnet-ids
     security_groups  = [aws_security_group.service_lb_sg.id]
     assign_public_ip = false
   }
