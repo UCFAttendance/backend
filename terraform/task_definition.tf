@@ -1,4 +1,6 @@
 locals {
+  redis_address = data.aws_elasticache_cluster.attendance_redis_cluster.cache_nodes[0].address
+  redis_port    = data.aws_elasticache_cluster.attendance_redis_cluster.cache_nodes[0].port
   environment_variables = {
     DJANGO_SETTINGS_MODULE            = "config.settings.production",
     DJANGO_SECURE_SSL_REDIRECT        = "False",
@@ -9,7 +11,7 @@ locals {
     DJANGO_ADMIN_URL                  = data.aws_ssm_parameter.admin_url.value,
     DJANGO_SECRET_KEY                 = data.aws_ssm_parameter.secret_key.value,
     SENTRY_DSN                        = data.aws_ssm_parameter.sentry_dns.value,
-    REDIS_URL                         = "redis://${data.aws_elasticache_replication_group.attendance_redis_replication_group.primary_endpoint_address}:${data.aws_elasticache_replication_group.attendance_redis_replication_group.port}",
+    REDIS_URL                         = "redis://${local.redis_address}:${local.redis_port}",
     DB_SECRET_ARN                     = data.aws_db_instance.attendance_db.master_user_secret[0].secret_arn,
     POSTGRES_HOST                     = data.aws_db_instance.attendance_db.address,
     POSTGRES_PORT                     = data.aws_db_instance.attendance_db.port,
