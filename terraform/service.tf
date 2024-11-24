@@ -22,6 +22,15 @@ resource "aws_security_group" "service_lb_sg" {
   }
 }
 
+resource "aws_security_group_rule" "db_ingress_from_ecs" {
+  type                     = "ingress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  security_group_id        = data.aws_db_instance.attendance_db.vpc_security_groups[0]
+  source_security_group_id = aws_security_group.service_lb_sg.id
+}
+
 resource "aws_lb_target_group" "app_target_group" {
   name        = "${local.app_prefix}-target-group"
   port        = 80

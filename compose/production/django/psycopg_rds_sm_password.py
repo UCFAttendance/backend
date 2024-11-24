@@ -9,8 +9,12 @@ import psycopg
 suggest_unrecoverable_after = 30
 start = time.time()
 
+# ECS task
+session = boto3.session.Session()
+region = session.region_name
+
 # Get the secret from AWS Secrets Manager
-client = boto3.client("secretsmanager", region_name=os.environ["AWS_REGION"])
+client = boto3.client("secretsmanager", region_name=region, session=session)
 response = client.get_secret_value(SecretId=os.environ["DB_SECRET_ARN"])
 secret = json.loads(response["SecretString"])
 
