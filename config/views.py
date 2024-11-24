@@ -1,7 +1,8 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import views, response, permissions
 
 
-class HealthCheckView(APIView):
+class HealthCheckView(views.APIView):
+    permission_classes = [permissions.AllowAny]
+
     def get(self, _):
-        return Response("OK")
+        return response.Response("OK")
