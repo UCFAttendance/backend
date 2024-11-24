@@ -20,7 +20,7 @@ start = time.time()
 
 # Get the secret from AWS Secrets Manager
 client = boto3.client("secretsmanager", region_name=os.environ["AWS_REGION"])
-response = client.get_secret_value(SecretId=os.environ["ATTENDANCE_SECRET_ID"])
+response = client.get_secret_value(SecretId=os.environ["DB_SECRET_ARN"])
 secret = json.loads(response["SecretString"])
 
 username = secret["username"]
