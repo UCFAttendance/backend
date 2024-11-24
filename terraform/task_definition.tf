@@ -50,8 +50,8 @@ resource "aws_ecs_task_definition" "attendance_backend" {
       },
       environment = [
         for key, value in local.environment_variables : {
-          name  = key
-          value = value
+          name  = tostring(key)
+          value = tostring(value)
         }
       ]
     }
