@@ -101,7 +101,7 @@ resource "aws_iam_policy" "backend_task_policy" {
         "Action" : [
           "s3:*"
         ],
-        "Resource" : data.aws_s3_bucket.attendance_bucket.arn
+        "Resource" : data.aws_s3_bucket.attendance_static_bucket.arn
       },
     ]
   })
