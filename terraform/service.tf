@@ -47,6 +47,10 @@ resource "aws_lb_target_group" "app_target_group" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb_listener_rule" "app_listener_rule" {
