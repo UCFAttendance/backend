@@ -3,6 +3,7 @@ locals {
   redis_port    = data.aws_elasticache_cluster.attendance_redis_cluster.cache_nodes[0].port
   environment_variables = {
     DJANGO_SETTINGS_MODULE            = "config.settings.production",
+    DJANGO_ALLOWED_HOSTS              = "*",
     DJANGO_SECURE_SSL_REDIRECT        = "False",
     DJANGO_ACCOUNT_ALLOW_REGISTRATION = "True",
     WEB_CONCURRENCY                   = "4",
