@@ -37,8 +37,8 @@ resource "aws_ecs_task_definition" "attendance_backend" {
       essential = true
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
+          containerPort = 5000
+          hostPort      = 5000
         }
       ],
       logConfiguration = {

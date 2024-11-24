@@ -33,7 +33,7 @@ resource "aws_security_group_rule" "db_ingress_from_ecs" {
 
 resource "aws_lb_target_group" "app_target_group" {
   name        = "${local.app_prefix}-target-group"
-  port        = 80
+  port        = 5000
   target_type = "ip"
   protocol    = "HTTP"
   vpc_id      = data.terraform_remote_state.core-infra.outputs.vpc-id
