@@ -4,6 +4,8 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+from .views import HealthCheckView
+
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
 ]
@@ -13,6 +15,7 @@ urlpatterns += [
     # API Auth
     path("api-auth/v1/", include("attendance.users.urls")),
     # API base url
+    path("health/", HealthCheckView.as_view()),
     path("api/v1/", include("config.api_router")),
     path("api/v1/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path(

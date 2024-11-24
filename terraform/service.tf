@@ -37,6 +37,16 @@ resource "aws_lb_target_group" "app_target_group" {
   target_type = "ip"
   protocol    = "HTTP"
   vpc_id      = data.terraform_remote_state.core-infra.outputs.vpc-id
+
+  health_check {
+    path                = "/health/"
+    protocol            = "HTTP"
+    port                = "traffic-port"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
 }
 
 resource "aws_lb_listener_rule" "app_listener_rule" {
