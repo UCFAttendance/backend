@@ -8,8 +8,8 @@ resource "aws_security_group" "service_lb_sg" {
   vpc_id      = data.terraform_remote_state.core-infra.outputs.vpc-id
 
   ingress {
-    from_port       = 80
-    to_port         = 80
+    from_port       = 5000
+    to_port         = 5000
     protocol        = "tcp"
     security_groups = data.aws_lb.attendance_alb.security_groups
   }
