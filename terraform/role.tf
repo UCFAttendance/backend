@@ -1,5 +1,5 @@
 resource "aws_iam_role" "backend_execution_role" {
-  name = "ecs-execution-role"
+  name = "backend-execution-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -15,9 +15,9 @@ resource "aws_iam_role" "backend_execution_role" {
   })
 }
 
-resource "aws_iam_policy" "ecs_task_execution_policy" {
-  name        = "ECSTaskExecutionPolicy"
-  description = "Policy to allow ECS task execution"
+resource "aws_iam_policy" "backend_execution_policy" {
+  name        = "BackendExecutionPolicy"
+  description = "Policy to allow ECS task execution for backend service"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -52,9 +52,25 @@ resource "aws_iam_policy" "ecs_task_execution_policy" {
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy_attachment" {
   role       = aws_iam_role.backend_execution_role.name
-  policy_arn = aws_iam_policy.ecs_task_execution_policy.arn
+  policy_arn = aws_iam_policy.backend_execution_policy.arn
 }
 
+resource "aws_iam_role" "backend_task_role" {
+  name = "backend-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
 
 resource "aws_iam_policy" "rds_access_policy" {
   name        = "RDSAccessPolicy"
@@ -82,6 +98,6 @@ resource "aws_iam_policy" "rds_access_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "rds_access_policy_attachment" {
-  role       = aws_iam_role.backend_execution_role.name
+  role       = aws_iam_role.backend_task_role.name
   policy_arn = aws_iam_policy.rds_access_policy.arn
 }

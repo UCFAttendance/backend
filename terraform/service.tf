@@ -52,6 +52,11 @@ resource "aws_ecs_service" "attendance_backend" {
   task_definition = aws_ecs_task_definition.attendance_backend.arn
   desired_count   = 1
 
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
     weight            = 1
