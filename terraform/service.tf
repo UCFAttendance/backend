@@ -31,12 +31,8 @@ resource "aws_security_group_rule" "db_ingress_from_ecs" {
   source_security_group_id = aws_security_group.service_lb_sg.id
 }
 
-resource "random_string" "ecs_target_group_name" {
-  length = 8
-}
-
 resource "aws_lb_target_group" "app_target_group" {
-  name        = "${local.app_prefix}-tg-${random_string.ecs_target_group_name.result}"
+  name        = "${local.app_prefix}-tg"
   port        = 5000
   target_type = "ip"
   protocol    = "HTTP"
@@ -50,10 +46,6 @@ resource "aws_lb_target_group" "app_target_group" {
     timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
