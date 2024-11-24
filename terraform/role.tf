@@ -72,9 +72,9 @@ resource "aws_iam_role" "backend_task_role" {
   })
 }
 
-resource "aws_iam_policy" "rds_access_policy" {
-  name        = "RDSAccessPolicy"
-  description = "Policy to allow access to RDS"
+resource "aws_iam_policy" "backend_task_policy" {
+  name        = "BackendECSTaskPolicy"
+  description = "Policy to allow access to RDS and S3 for backend service"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -82,7 +82,10 @@ resource "aws_iam_policy" "rds_access_policy" {
       {
         "Effect" : "Allow",
         "Action" : [
-          "secretsmanager:GetSecretValue"
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:PutResourcePolicy",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:TagResource"
         ],
         "Resource" : data.aws_db_instance.attendance_db.master_user_secret[0].secret_arn
       },
@@ -92,12 +95,21 @@ resource "aws_iam_policy" "rds_access_policy" {
           "kms:Decrypt"
         ],
         "Resource" : "arn:aws:kms:${var.aws_region}:${data.aws_db_instance.attendance_db.master_user_secret[0].kms_key_id}"
-      }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:*"
+        ],
+        "Resource" : data.aws_s3_bucket.attendance_bucket.arn
+      },
     ]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "rds_access_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "backend_task_policy_attachment" {
   role       = aws_iam_role.backend_task_role.name
-  policy_arn = aws_iam_policy.rds_access_policy.arn
+  policy_arn = aws_iam_policy.backend_task_policy.arn
 }
+
+
