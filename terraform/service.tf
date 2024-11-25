@@ -36,7 +36,7 @@ resource "aws_security_group_rule" "redis_ingress_from_ecs" {
   from_port                = 6379
   to_port                  = 6379
   protocol                 = "tcp"
-  security_group_id        = data.aws_elasticache_cluster.attendance_redis_cluster.security_group_ids[0]
+  security_group_id        = tolist(data.aws_elasticache_cluster.attendance_redis_cluster.security_group_ids)[0]
   source_security_group_id = aws_security_group.service_lb_sg.id
 
 }
