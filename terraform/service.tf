@@ -60,7 +60,7 @@ resource "aws_lb_listener_rule" "app_listener_rule" {
 
   condition {
     path_pattern {
-      values = ["/api/*", "/api-auth/*"]
+      values = ["/api/*", "/api-auth/*", "/${data.aws_ssm_parameter.admin_url.value}"]
     }
   }
 }
