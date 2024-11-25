@@ -31,6 +31,16 @@ resource "aws_security_group_rule" "db_ingress_from_ecs" {
   source_security_group_id = aws_security_group.service_lb_sg.id
 }
 
+resource "aws_security_group_rule" "redis_ingress_from_ecs" {
+  type                     = "ingress"
+  from_port                = 6379
+  to_port                  = 6379
+  protocol                 = "tcp"
+  security_group_id        = data.aws_elasticache_cluster.attendance_redis.security_group_ids[0]
+  source_security_group_id = aws_security_group.service_lb_sg.id
+
+}
+
 resource "aws_lb_target_group" "app_target_group" {
   name        = "${local.app_prefix}-tg"
   port        = 5000
@@ -60,7 +70,7 @@ resource "aws_lb_listener_rule" "app_listener_rule" {
 
   condition {
     path_pattern {
-      values = ["/api/*", "/api-auth/*", "/${data.aws_ssm_parameter.admin_url.value}"]
+      values = ["/api/*", "/api-auth/*", "/${data.aws_ssm_parameter.admin_url.value}/*"]
     }
   }
 }
