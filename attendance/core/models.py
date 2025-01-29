@@ -19,9 +19,9 @@ class Session(models.Model):
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(blank=True, null=True)
-    # longitude = models.FloatField()
-    # latitude = models.FloatField()
-    salt = models.CharField(max_length=32, default=uuid.uuid4().hex, editable=False)
+    salt = models.CharField(max_length=32, editable=False)
+    face_recognition_enabled = models.BooleanField(default=False)
+    location_enabled = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.course_id} - {self.start_time} - {self.end_time}"

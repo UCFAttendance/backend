@@ -25,7 +25,14 @@ class SessionReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Session
-        fields = ("id", "course_id", "start_time", "end_time")
+        fields = (
+            "id",
+            "course_id",
+            "start_time",
+            "end_time",
+            "face_recognition_enabled",
+            "location_enabled",
+        )
 
 
 class SessionWriteSerializer(serializers.ModelSerializer):
