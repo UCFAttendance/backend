@@ -18,6 +18,5 @@ resource "aws_lambda_function" "attendance_migration" {
   }
   logging_config {
     log_format = "json"
-    log_group  = aws_cloudwatch_log_group.attendance_migration_lambda.name
   }
 }
