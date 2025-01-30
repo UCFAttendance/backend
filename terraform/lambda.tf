@@ -10,7 +10,7 @@ resource "aws_lambda_function" "attendance_migration" {
     security_group_ids = [aws_security_group.service_lb_sg.id]
   }
   image_config {
-    command = ["migrate.handler"]
+    command           = ["migrate.handler"]
     working_directory = "/app"
   }
   environment {
