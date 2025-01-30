@@ -67,7 +67,6 @@ resource "aws_iam_role" "backend_task_role" {
         Principal = {
           Service = [
             "ecs-tasks.amazonaws.com",
-            "lambda.amazonaws.com"
           ]
         }
       }
@@ -132,4 +131,46 @@ resource "aws_iam_role_policy_attachment" "backend_task_policy_attachment" {
   policy_arn = aws_iam_policy.backend_task_policy.arn
 }
 
+resource "aws_iam_role" "lambda_migration_role" {
+  name = "lambda-migration-role"
 
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "lambda_vpc_network_interface" {
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_vpc_network_interface_attachment" {
+  role       = aws_iam_role.lambda_migration_role.name
+  policy_arn = aws_iam_policy.lambda_vpc_network_interface.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_backend_task_policy_attachment" {
+  role       = aws_iam_role.lambda_migration_role.name
+  policy_arn = aws_iam_policy.backend_task_policy.arn
+}
