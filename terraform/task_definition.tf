@@ -18,7 +18,6 @@ locals {
     POSTGRES_PORT                     = "${data.aws_db_instance.attendance_db.port}",
     POSTGRES_DB                       = "${data.aws_db_instance.attendance_db.db_name}",
     POSTGRES_USER                     = "${data.aws_db_instance.attendance_db.master_username}",
-    AWS_REGION                        = "${var.aws_region}",
   }
 }
 

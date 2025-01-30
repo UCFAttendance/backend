@@ -19,7 +19,7 @@ suggest_unrecoverable_after = 30
 start = time.time()
 
 # Get the secret from AWS Secrets Manager
-client = boto3.client("secretsmanager", region_name=os.environ["AWS_REGION"])
+client = boto3.client("secretsmanager")
 response = client.get_secret_value(SecretId=os.environ["DB_SECRET_ARN"])
 secret = json.loads(response["SecretString"])
 
