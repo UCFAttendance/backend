@@ -66,6 +66,9 @@ COPY --chown=django:django ./compose/production/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
+COPY --chown=django:django ./compose/production/django/migrate.py /migrate.py
+RUN sed -i 's/\r$//g' /migrate.py
+RUN chmod +x /migrate.py
 
 # copy application code to WORKDIR
 COPY --chown=django:django . ${APP_HOME}
