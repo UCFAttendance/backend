@@ -17,6 +17,6 @@ resource "aws_lambda_function" "attendance_migration" {
     variables = local.environment_variables
   }
   logging_config {
-    log_format = "json"
+    log_format = "JSON"
   }
 }
