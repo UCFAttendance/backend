@@ -106,6 +106,20 @@ resource "aws_iam_policy" "backend_task_policy" {
           "${data.aws_s3_bucket.attendance_static_bucket.arn}/*"
         ]
       },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:BatchGetItem",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
+        ],
+        "Resource" : data.aws_dynamodb_table.attendance.arn
+      }
     ]
   })
 }

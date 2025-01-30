@@ -50,3 +50,7 @@ data "aws_ssm_parameter" "secret_key" {
 data "aws_ssm_parameter" "sentry_dns" {
   name = "/application/backend/sentry-dns"
 }
+
+data "aws_dynamodb_table" "attendance" {
+  name = "attendance"
+}
