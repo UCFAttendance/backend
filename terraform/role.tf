@@ -160,6 +160,14 @@ resource "aws_iam_policy" "lambda_vpc_network_interface" {
           "ec2:DeleteNetworkInterface"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:log-group:/aws/lambda/${aws_lambda_function.attendance_migration.function_name}"
       }
     ]
   })
