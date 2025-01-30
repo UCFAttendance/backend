@@ -12,4 +12,7 @@ resource "aws_lambda_function" "attendance_migration" {
   image_config {
     command = ["python", "/app/manage.py", "migrate"]
   }
+  environment {
+    variables = local.environment_variables
+  }
 }
