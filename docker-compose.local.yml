@@ -1,8 +1,7 @@
-version: "3"
-
 volumes:
   attendance_local_postgres_data: {}
   attendance_local_postgres_data_backups: {}
+  
 
 services:
   django:
@@ -20,7 +19,7 @@ services:
       - ./.envs/.local/.django
       - ./.envs/.local/.postgres
     ports:
-      - "8000:8000"
+      - '8000:8000'
     command: /start
 
   postgres:
@@ -36,7 +35,7 @@ services:
       - ./.envs/.local/.postgres
 
   mailpit:
-    image: axllent/mailpit:v1.8
+    image: docker.io/axllent/mailpit:latest
     container_name: attendance_local_mailpit
     ports:
       - "8025:8025"
