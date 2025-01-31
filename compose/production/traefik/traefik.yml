@@ -41,14 +41,6 @@ http:
         # https://docs.traefik.io/master/routing/routers/#certresolver
         certResolver: letsencrypt
 
-    lambda-router:
-      rule: "ClientIP(`10.0.0.0/16`)"
-      entryPoints:
-        - internal
-      service: django
-      middlewares:
-        - lambda-headers
-
   middlewares:
     csrf:
       # https://docs.traefik.io/master/middlewares/headers/#hostsproxyheaders
@@ -57,11 +49,6 @@ http:
         hostsProxyHeaders: ["X-CSRFToken"]
         customRequestHeaders:
           X-Internal-Service: ""
-
-    lambda-headers:
-      headers:
-        customRequestHeaders:
-          X-Internal-Service: "Lambda"
 
   services:
     django:
