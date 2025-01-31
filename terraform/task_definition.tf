@@ -58,3 +58,42 @@ resource "aws_ecs_task_definition" "attendance_backend" {
     }
   ])
 }
+
+resource "aws_ecs_task_definition" "attendance_backend_db_migration" {
+  family                   = "${local.app_prefix}-db-migration-task-definition"
+  requires_compatibilities = ["FARGATE"]
+  execution_role_arn       = aws_iam_role.backend_execution_role.arn
+  task_role_arn            = aws_iam_role.backend_task_role.arn
+  network_mode             = "awsvpc"
+  cpu                      = "512"
+  memory                   = "1024"
+
+  container_definitions = jsonencode([
+    {
+      name      = "${local.app_prefix}-container"
+      command   = ["python", "/app/manage.py", "migrate"]
+      image     = "${data.aws_ecr_repository.attendance_backend.repository_url}:${var.image_tag}"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 5000
+          hostPort      = 5000
+        }
+      ],
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.attendance_backend.name,
+          "awslogs-region"        = var.aws_region,
+          "awslogs-stream-prefix" = "ecs"
+        }
+      },
+      environment = [
+        for key, value in local.environment_variables : {
+          name  = tostring(key)
+          value = tostring(value)
+        }
+      ]
+    }
+  ])
+}
