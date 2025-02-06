@@ -60,13 +60,13 @@ class SessionModelViewSet(viewsets.ModelViewSet):
         session = self.get_object()
         session.end_time = timezone.now()
         session.save()
-        cache.delete(f"teacher:{request.user.id}:session:{pk}:secret")
+        cache.delete(f"teacher:{request.user.id}:session:{pk}")
         return Response(self.get_serializer(session).data)
 
     @action(detail=True, methods=["post"])
     def get_secret(self, request: Request, pk=None):
-        if secret := cache.get(f"teacher:{request.user.id}:session:{pk}:secret"):
-            return Response({"secret": secret})
+        if session_data := cache.get(f"teacher:{request.user.id}:session:{pk}"):
+            return Response({"secret": session_data["secret"]})
 
         session: Session = self.get_object()
         return Response({"secret": session.generate_secret()})

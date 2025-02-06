@@ -1,6 +1,7 @@
-from typing import Any
 import uuid
+from typing import Any
 
+import boto3
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -12,6 +13,7 @@ from attendance.users.serializers import UserSerializer
 from .models import Attendance, Course, Session, get_face_image_path
 
 User = get_user_model()
+s3_client = boto3.client("s3")
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -32,6 +34,8 @@ class SessionReadSerializer(serializers.ModelSerializer):
             "end_time",
             "face_recognition_enabled",
             "location_enabled",
+            "longitude",
+            "latitude",
         )
 
 
@@ -45,15 +49,18 @@ class SessionWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Course does not belong to you.")
         return value
 
+    def validate(self, data):
+        if data.get("location_enabled", False):
+            if not data.get("longitude", None) or not data.get("latitude", None):
+                raise serializers.ValidationError("Longitude and latitude are required if location_enabled is True.")
+        return data
+
     def create(self, validated_data):
         validated_data["salt"] = uuid.uuid4().hex
         return super().create(validated_data)
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
-    session_id = SessionReadSerializer()
-    student_id = UserSerializer()
-
     class Meta:
         model = Attendance
         fields = (
@@ -61,7 +68,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             "session_id",
             "student_id",
             "created_at",
-            "face_recognition_status",
+            "is_present",
         )
 
 
@@ -86,21 +93,20 @@ class AttendanceImageSerializer(serializers.ModelSerializer):
         if "storages" not in settings.INSTALLED_APPS:
             return "init.jpeg"
 
-        import boto3
-
-        s3_client = boto3.client("s3")
         return s3_client.generate_presigned_url(
             ClientMethod="get_object",
             Params={
                 "Bucket": settings.MEDIA_BUCKET_NAME,
                 "Key": f"{obj.student_id.id}/init.jpeg",
             },
-            ExpiresIn=3600,
+            ExpiresIn=900,
         )
 
 
 class AttendanceCreateSerializer(serializers.Serializer):
     token = serializers.CharField()
+    longitude = serializers.FloatField(required=False)
+    latitude = serializers.FloatField(required=False)
 
     def validate(self, data):
         # Get token from request data
@@ -116,10 +122,15 @@ class AttendanceCreateSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid token.")
 
         # Get session secret from cache
-        session_secret = cache.get(f"teacher:{teacher_id}:session:{session_id}:secret")
-        if not session_secret:
-            print(f'No session secret "teacher:{teacher_id}:session:{session_id}:secret"')
+        session_data = cache.get(f"teacher:{teacher_id}:session:{session_id}")
+        if not session_data:
             raise serializers.ValidationError("Token not active for this session.")
+
+        session_secret = session_data["secret"]
+        session_face_recognition_enabled = session_data["face_recognition_enabled"]
+        session_location_enabled = session_data["location_enabled"]
+        session_longitude = session_data["longitude"]
+        session_latitude = session_data["latitude"]
 
         # Verify token
         try:
@@ -129,15 +140,29 @@ class AttendanceCreateSerializer(serializers.Serializer):
         except jwt.exceptions.ExpiredSignatureError:
             raise serializers.ValidationError("Token expired.")
 
+        # Check if location is enabled
+        if session_location_enabled:
+            longitude = data["longitude"]
+            latitude = data["latitude"]
+            if not longitude or not latitude:
+                raise serializers.ValidationError("Longitude and latitude are required.")
+
+            # Longtitude and latitude are not within the range
+            if (
+                longitude < session_longitude - 0.0005
+                or longitude > session_longitude + 0.0005
+                or latitude < session_latitude - 0.0005
+                or latitude > session_latitude + 0.0005
+            ):
+                raise serializers.ValidationError("Location not within range.")
+
         data["session_id"] = session_id
-        data["teacher_id"] = teacher_id
+        data["face_recognition_enabled"] = session_face_recognition_enabled
         return data
 
     def get_presigned_put_object_url(self):
         if "storages" not in settings.INSTALLED_APPS:
             return None
-
-        import boto3
 
         if self.context["request"].user.init_image:
             path = get_face_image_path(
@@ -154,24 +179,32 @@ class AttendanceCreateSerializer(serializers.Serializer):
                 "Key": path,
                 "ContentType": "image/jpeg",
             },
-            ExpiresIn=3600,
+            ExpiresIn=300,
         )
 
     def create(self, validated_data):
-        attendance_obj, _ = Attendance.objects.get_or_create(
+        default_is_present = False if validated_data["face_recognition_enabled"] else True
+        default_face_recognition_status = (
+            Attendance.FaceRecognitionStatus.NOT_REQUIRED
+            if validated_data["face_recognition_enabled"]
+            else Attendance.FaceRecognitionStatus.PENDING
+        )
+
+        attendance_obj, is_created = Attendance.objects.get_or_create(
             session_id_id=validated_data["session_id"],
             student_id=self.context["request"].user,
+            defaults={
+                "is_present": default_is_present,
+                "face_recognition_status": default_face_recognition_status,
+            },
         )
-        if (
-            attendance_obj.face_recognition_status == Attendance.FaceRecognitionStatus.FAILED
-            or attendance_obj.face_recognition_status == Attendance.FaceRecognitionStatus.SUCCESS
-        ):
+        if attendance_obj.is_present and not is_created:
             raise serializers.ValidationError("You have already checked in.")
         return attendance_obj
 
-    def to_representation(self, instance: Any) -> Any:
+    def to_representation(self, instance: Attendance) -> Any:
         serialized_data = AttendanceSerializer(instance).data
-        if not bool(instance.face_image):
+        if instance.face_recognition_status == Attendance.FaceRecognitionStatus.PENDING:
             serialized_data["face_image_upload_url"] = self.get_presigned_put_object_url()
         return serialized_data
 
