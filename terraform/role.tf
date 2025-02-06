@@ -121,6 +121,14 @@ resource "aws_iam_policy" "backend_task_policy" {
           "dynamodb:Scan"
         ],
         "Resource" : data.aws_dynamodb_table.attendance.arn
+      },
+      {
+        # TODO: Fine-grain this policy
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:*"
+        ],
+        "Resource" : "*"
       }
     ]
   })
