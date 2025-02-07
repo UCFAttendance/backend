@@ -61,6 +61,9 @@ class SessionWriteSerializer(serializers.ModelSerializer):
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
+    session_id = SessionReadSerializer()
+    student_id = UserSerializer()
+
     class Meta:
         model = Attendance
         fields = (
