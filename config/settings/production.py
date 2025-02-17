@@ -218,3 +218,4 @@ SPECTACULAR_SETTINGS["SERVERS"] = [  # noqa: F405
 ]
 # Your stuff...
 # ------------------------------------------------------------------------------
+AWS_REGION = env("AWS_REGION", default=None)

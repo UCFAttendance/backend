@@ -13,7 +13,7 @@ from attendance.users.serializers import UserSerializer
 from .models import Attendance, Course, Session, get_face_image_path
 
 User = get_user_model()
-s3_client = boto3.client("s3")
+s3_client = boto3.client("s3", region_name=settings.AWS_REGION)
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -174,7 +174,6 @@ class AttendanceCreateSerializer(serializers.Serializer):
         else:
             path = get_face_image_path(self.instance, f"{self.instance.id}_init")
 
-        s3_client = boto3.client("s3")
         return s3_client.generate_presigned_url(
             ClientMethod="put_object",
             Params={

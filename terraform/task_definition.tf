@@ -35,6 +35,10 @@ resource "aws_ecs_task_definition" "attendance_backend" {
       name      = "${local.app_prefix}-container"
       image     = "${data.aws_ecr_repository.attendance_backend.repository_url}:${var.image_tag}"
       essential = true
+      restartPolicy = {
+        enabled              = true
+        restartAttemptPeriod = 120
+      }
       portMappings = [
         {
           containerPort = 5000
