@@ -13,7 +13,8 @@ from attendance.users.serializers import UserSerializer
 from .models import Attendance, Course, Session, get_face_image_path
 
 User = get_user_model()
-s3_client = boto3.client("s3", region_name=settings.AWS_REGION)
+if "storages" in settings.INSTALLED_APPS:
+    s3_client = boto3.client("s3", region_name=settings.AWS_REGION)
 
 
 class CourseSerializer(serializers.ModelSerializer):

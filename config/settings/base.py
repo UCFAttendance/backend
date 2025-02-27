@@ -314,3 +314,5 @@ REST_AUTH = {
 }
 
 WHITELISTED_EMAIL_DOMAINS = env.list("WHITELISTED_EMAIL_DOMAINS", default=["ucf.edu"])
+
+AWS_REGION = env("AWS_REGION", default="us-east-1")
