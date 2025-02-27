@@ -38,6 +38,10 @@ data "aws_elasticache_cluster" "attendance_redis_cluster" {
   cluster_id = data.terraform_remote_state.core-infra.outputs.redis-cluster-id
 }
 
+data "aws_sqs_queue" "attendance_queue" {
+  name = data.terraform_remote_state.core-infra.outputs.sqs-name
+}
+
 # TODO: Replace admin_url and secret_key with secrets manager
 data "aws_ssm_parameter" "admin_url" {
   name = "/application/backend/admin-url"

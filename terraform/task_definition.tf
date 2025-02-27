@@ -18,6 +18,7 @@ locals {
     POSTGRES_PORT                     = "${data.aws_db_instance.attendance_db.port}",
     POSTGRES_DB                       = "${data.aws_db_instance.attendance_db.db_name}",
     POSTGRES_USER                     = "${data.aws_db_instance.attendance_db.master_username}",
+    SQS_QUEUE_URL                     = "${data.aws_sqs_queue.attendance_queue.url}",
   }
 }
 
@@ -45,6 +46,30 @@ resource "aws_ecs_task_definition" "attendance_backend" {
           hostPort      = 5000
         }
       ],
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.attendance_backend.name,
+          "awslogs-region"        = var.aws_region,
+          "awslogs-stream-prefix" = "ecs"
+        }
+      },
+      environment = [
+        for key, value in local.environment_variables : {
+          name  = tostring(key)
+          value = tostring(value)
+        }
+      ]
+    },
+    {
+      name      = "${local.app_prefix}-sqs-processor-container"
+      image     = "${data.aws_ecr_repository.attendance_backend.repository_url}:${var.image_tag}"
+      command   = ["python", "/app/manage.py", "process_sqs_msg"]
+      essential = true
+      restartPolicy = {
+        enabled              = true
+        restartAttemptPeriod = 120
+      }
       logConfiguration = {
         logDriver = "awslogs",
         options = {

@@ -129,6 +129,17 @@ resource "aws_iam_policy" "backend_task_policy" {
           "s3:*"
         ],
         "Resource" : "*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "sqs:SendMessage",
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:GetQueueUrl"
+        ],
+        "Resource" : data.aws_sqs_queue.attendance_queue.arn
       }
     ]
   })

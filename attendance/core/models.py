@@ -2,7 +2,7 @@ import hashlib
 
 from django.core.cache import cache
 from django.db import models
-from attendance.core.managers import AttendanceManager
+
 
 class Course(models.Model):
     name = models.CharField(max_length=50)
@@ -73,8 +73,6 @@ class Attendance(models.Model):
         default=FaceRecognitionStatus.NOT_REQUIRED,
     )
     face_image = models.ImageField(upload_to=get_face_image_path, null=True)
-
-    object = AttendanceManager()
 
     class Meta:
         unique_together = ("session_id", "student_id")
