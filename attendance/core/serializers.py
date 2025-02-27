@@ -188,9 +188,9 @@ class AttendanceCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         default_is_present = False if validated_data["face_recognition_enabled"] else True
         default_face_recognition_status = (
-            Attendance.FaceRecognitionStatus.NOT_REQUIRED
+            Attendance.FaceRecognitionStatus.PENDING
             if validated_data["face_recognition_enabled"]
-            else Attendance.FaceRecognitionStatus.PENDING
+            else Attendance.FaceRecognitionStatus.NOT_REQUIRED
         )
 
         attendance_obj, is_created = Attendance.objects.get_or_create(
