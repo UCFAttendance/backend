@@ -43,7 +43,14 @@ class SessionReadSerializer(serializers.ModelSerializer):
 class SessionWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
-        fields = ("id", "course_id")
+        fields = (
+            "id",
+            "course_id",
+            "face_recognition_enabled",
+            "location_enabled",
+            "longitude",
+            "latitude",
+        )
 
     def validate_course_id(self, value):
         if value.teacher_id != self.context["request"].user:
