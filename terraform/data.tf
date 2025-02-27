@@ -39,7 +39,7 @@ data "aws_elasticache_cluster" "attendance_redis_cluster" {
 }
 
 data "aws_sqs_queue" "attendance_queue" {
-  name = data.terraform_remote_state.core-infra.outputs.sqs-name
+  name = data.terraform_remote_state.core-infra.outputs.sqs-main-queue-name
 }
 
 # TODO: Replace admin_url and secret_key with secrets manager
