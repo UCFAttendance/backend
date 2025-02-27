@@ -101,7 +101,7 @@ class FaceRecognitionProcessor:
         try:
             Attendance.objects.filter(id=attendance_id).update(
                 face_recognition_status=face_recognition_status,
-                ís_present=True if face_recognition_status == Attendance.FaceRecognitionStatus.SUCCESS else False,
+                is_present=True if face_recognition_status == Attendance.FaceRecognitionStatus.SUCCESS else False,
             )
             LOGGER.info(
                 f"Successfully updated attendance record - id: {attendance_id}, " f"status: {face_recognition_status}"
