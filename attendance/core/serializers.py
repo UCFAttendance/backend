@@ -79,6 +79,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             "session_id",
             "student_id",
             "created_at",
+            "face_recognition_status",
             "is_present",
         )
 
