@@ -59,7 +59,7 @@ class SessionWriteSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data.get("location_enabled", False):
-            if not data.get("longitude", None) or not data.get("latitude", None):
+            if not data.get("longitude") or not data.get("latitude"):
                 raise serializers.ValidationError("Longitude and latitude are required if location_enabled is True.")
         return data
 
