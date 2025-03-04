@@ -101,16 +101,6 @@ resource "aws_iam_policy" "backend_task_policy" {
       {
         "Effect" : "Allow",
         "Action" : [
-          "s3:*"
-        ],
-        "Resource" : [
-          data.aws_s3_bucket.attendance_static_bucket.arn,
-          "${data.aws_s3_bucket.attendance_static_bucket.arn}/*"
-        ]
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
           "dynamodb:PutItem",
           "dynamodb:GetItem",
           "dynamodb:UpdateItem",
@@ -140,7 +130,15 @@ resource "aws_iam_policy" "backend_task_policy" {
           "sqs:GetQueueUrl"
         ],
         "Resource" : data.aws_sqs_queue.attendance_queue.arn
-      }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ses:SendEmail",
+          "ses:SendRawEmail"
+        ],
+        "Resource" : "*"
+      },
     ]
   })
 }
