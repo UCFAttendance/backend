@@ -2,7 +2,6 @@ from django.urls import include, path
 
 from .views import LoginRedirect, PasswordResetConfirmRedirectView, UserDetail
 
-app_name = "users"
 urlpatterns = [
     path("", include("dj_rest_auth.urls")),
     path(
