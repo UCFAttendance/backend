@@ -178,6 +178,10 @@ LOGGING = {
     },
     "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
+        "": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
         "django.db.backends": {
             "level": "ERROR",
             "handlers": ["console"],
