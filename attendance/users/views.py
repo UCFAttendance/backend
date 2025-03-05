@@ -32,7 +32,7 @@ class PasswordResetConfirmRedirectView(generics.GenericAPIView):
 
     def redirect(self, request, *args, **kwargs):
         return redirect(
-            f"{settings.FRONTEND_BASE_URL}/auth/password-reset-confirm/?uid={kwargs['uid']}&token={kwargs['token']}"
+            f"{settings.FRONTEND_BASE_URL}/auth/password-reset-confirm/?uid={kwargs['uid']}&token={kwargs['token']}&role={kwargs['role']}"
         )
 
     def get(self, request, *args, **kwargs):

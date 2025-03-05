@@ -5,7 +5,7 @@ from .views import LoginRedirect, PasswordResetConfirmRedirectView, UserDetail
 urlpatterns = [
     path("", include("dj_rest_auth.urls")),
     path(
-        "password-reset/<str:uid>/<str:token>/",
+        "password-reset/<str:uid>/<str:role>/<str:token>/",
         PasswordResetConfirmRedirectView.as_view(),
         name="password_reset_confirm",
     ),

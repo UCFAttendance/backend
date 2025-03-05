@@ -8,6 +8,7 @@ locals {
     DJANGO_ACCOUNT_ALLOW_REGISTRATION = "True",
     WEB_CONCURRENCY                   = "4",
     DJANGO_AWS_STORAGE_BUCKET_NAME    = "${data.aws_s3_bucket.attendance_static_bucket.bucket}",
+    DJANGO_FRONTEND_BASE_URL          = var.frontend_base_url,
     DJANGO_MEDIA_BUCKET_NAME          = "${data.aws_s3_bucket.attendance_static_bucket.bucket}",
     DJANGO_ADMIN_URL                  = "${data.aws_ssm_parameter.admin_url.value}",
     DJANGO_SECRET_KEY                 = "${data.aws_ssm_parameter.secret_key.value}",
