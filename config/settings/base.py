@@ -312,6 +312,7 @@ REST_AUTH = {
     "JWT_AUTH_HTTPONLY": False,
     "USER_DETAILS_SERIALIZER": "attendance.users.serializers.UserSerializer",
     "PASSWORD_RESET_SERIALIZER": "attendance.users.serializers.CustomPasswordResetSerializer",
+    "OLD_PASSWORD_FIELD_ENABLED": True,
 }
 
 WHITELISTED_EMAIL_DOMAINS = env.list("WHITELISTED_EMAIL_DOMAINS", default=["ucf.edu"])

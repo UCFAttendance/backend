@@ -154,8 +154,8 @@ class AttendanceCreateSerializer(serializers.Serializer):
 
         # Check if location is enabled
         if session_location_enabled:
-            longitude = data["longitude"]
-            latitude = data["latitude"]
+            longitude = data.get("longitude", None)
+            latitude = data.get("latitude", None)
             if not longitude or not latitude:
                 raise serializers.ValidationError("Longitude and latitude are required.")
 
