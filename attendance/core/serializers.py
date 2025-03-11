@@ -161,10 +161,10 @@ class AttendanceCreateSerializer(serializers.Serializer):
 
             # Longtitude and latitude are not within the range
             if (
-                longitude < session_longitude - 0.0002
-                or longitude > session_longitude + 0.0002
-                or latitude < session_latitude - 0.0002
-                or latitude > session_latitude + 0.0002
+                longitude < session_longitude - 0.005
+                or longitude > session_longitude + 0.005
+                or latitude < session_latitude - 0.005
+                or latitude > session_latitude + 0.005
             ):
                 raise serializers.ValidationError("Location not within range.")
 
