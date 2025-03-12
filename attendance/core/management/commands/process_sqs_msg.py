@@ -10,6 +10,7 @@ from botocore.exceptions import ClientError
 from django.core.management.base import BaseCommand
 
 from attendance.core.models import Attendance
+from attendance.users.models import User
 
 LOGGER = logging.getLogger(__name__)
 
@@ -62,6 +63,7 @@ class FaceRecognitionProcessor:
             self.s3.copy_object(
                 Bucket=bucket_name, CopySource=f"{bucket_name}/{object_key}", Key=f"{student_id}/init.jpeg"
             )
+            User.objects.filter(id=student_id).update(init_image=True)
             self.update_attendance_record(attendance_id, Attendance.FaceRecognitionStatus.SUCCESS)
         except ClientError as e:
             LOGGER.error(f"Failed to copy init image: {e}")
