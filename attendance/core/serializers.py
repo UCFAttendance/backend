@@ -89,6 +89,7 @@ class AttendanceImageSerializer(serializers.ModelSerializer):
     session_id = SessionReadSerializer()
     student_id = UserSerializer()
     init_face_image = serializers.SerializerMethodField()
+    signed_face_image = serializers.SerializerMethodField()
 
     class Meta:
         model = Attendance
@@ -100,6 +101,7 @@ class AttendanceImageSerializer(serializers.ModelSerializer):
             "face_recognition_status",
             "face_image",
             "init_face_image",
+            "signed_face_image",
         )
 
     def get_init_face_image(self, obj):
@@ -111,6 +113,19 @@ class AttendanceImageSerializer(serializers.ModelSerializer):
             Params={
                 "Bucket": settings.MEDIA_BUCKET_NAME,
                 "Key": f"{obj.student_id.id}/init.jpeg",
+            },
+            ExpiresIn=900,
+        )
+
+    def get_signed_face_image(self, obj):
+        if "storages" not in settings.INSTALLED_APPS:
+            return "face.jpeg"
+
+        return s3_client.generate_presigned_url(
+            ClientMethod="get_object",
+            Params={
+                "Bucket": settings.MEDIA_BUCKET_NAME,
+                "Key": f"{obj.student_id.id}/face.jpeg",
             },
             ExpiresIn=900,
         )
