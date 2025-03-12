@@ -35,7 +35,7 @@ class FaceRecognitionProcessor:
                 LOGGER.info(f"Processing S3 Record: {bucket_name}/{object_key}")
 
                 # Validate object key format
-                REGEX = r"^\d+/\d+(_init)?\.jpeg$"
+                REGEX = r"^(\d+)/(\d+)(?:_init)?\.jpeg$"
                 match_obj = re.match(REGEX, object_key)
                 if not match_obj:
                     LOGGER.warning(f"Invalid object key format: {object_key}")
