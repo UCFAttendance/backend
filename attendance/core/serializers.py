@@ -118,14 +118,11 @@ class AttendanceImageSerializer(serializers.ModelSerializer):
         )
 
     def get_signed_face_image(self, obj):
-        # if "storages" not in settings.INSTALLED_APPS:
-        #     return 
-
         return s3_client.generate_presigned_url(
             ClientMethod="get_object",
             Params={
                 "Bucket": settings.MEDIA_BUCKET_NAME,
-                "Key": obj.face_image,
+                "Key": f"{obj.student_id.id}/{obj.id}.jpeg",
             },
             ExpiresIn=900,
         )
