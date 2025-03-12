@@ -187,9 +187,7 @@ class AttendanceCreateSerializer(serializers.Serializer):
             return None
 
         if self.context["request"].user.init_image:
-            path = get_face_image_path(
-                self.instance, f"{self.instance.id}_{int(self.instance.created_at.timestamp())}"
-            )
+            path = get_face_image_path(self.instance, self.instance.id)
         else:
             path = get_face_image_path(self.instance, "init")
 

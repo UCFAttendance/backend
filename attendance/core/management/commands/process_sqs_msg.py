@@ -6,7 +6,6 @@ import time
 from typing import Any, Dict
 
 import boto3
-from botocore.exceptions import ClientError
 from django.core.management.base import BaseCommand
 
 from attendance.core.models import Attendance
@@ -35,7 +34,7 @@ class FaceRecognitionProcessor:
                 LOGGER.info(f"Processing S3 Record: {bucket_name}/{object_key}")
 
                 # Validate object key format
-                REGEX = r"^\d+/\d+_(init|\d+)\.jpeg$"
+                REGEX = r"^\d+\/(init|\d+)\.jpeg$"
                 if not re.match(REGEX, object_key):
                     LOGGER.warning(f"Invalid object key format: {object_key}")
                     return
