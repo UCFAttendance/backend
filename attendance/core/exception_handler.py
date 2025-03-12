@@ -21,7 +21,7 @@ def core_exception_handler(exc, context):
     return response
 
 
-def _handle_integrity_error(exc):
+def _handle_integrity_error(exc, context):
     regex = r'violates check constraint "(?P<constraint_name>\w+)"'
     constraint_error = re.search(regex, str(exc)).group("constraint_name")
     if constraint_error in ERRORS_MESSAGE_CODE:
