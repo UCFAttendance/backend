@@ -1,3 +1,4 @@
+import math
 import uuid
 from typing import Any
 
@@ -120,6 +121,20 @@ class AttendanceCreateSerializer(serializers.Serializer):
     longitude = serializers.FloatField(required=False)
     latitude = serializers.FloatField(required=False)
 
+    @staticmethod
+    def approx_distance(lat1, lon1, lat2, lon2):
+        # Earth radius in meters
+        R = 6371000
+
+        # Convert latitude and longitude from degrees to radians
+        lat1_rad = math.radians(lat1)
+        lat2_rad = math.radians(lat2)
+
+        # Approximate formula (works well for short distances)
+        x = (lon2 - lon1) * math.cos((lat1_rad + lat2_rad) / 2)
+        y = lat2 - lat1
+        return R * math.sqrt(x**2 + y**2) * math.pi / 180
+
     def validate(self, data):
         # Get token from request data
         token = data["token"]
@@ -160,12 +175,7 @@ class AttendanceCreateSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Longitude and latitude are required.")
 
             # Longtitude and latitude are not within the range
-            if (
-                longitude < session_longitude - 0.005
-                or longitude > session_longitude + 0.005
-                or latitude < session_latitude - 0.005
-                or latitude > session_latitude + 0.005
-            ):
+            if self.approx_distance(latitude, longitude, session_latitude, session_longitude) > 100:
                 raise serializers.ValidationError("Location not within range.")
 
         data["session_id"] = session_id
