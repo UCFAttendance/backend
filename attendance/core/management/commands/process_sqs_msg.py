@@ -48,7 +48,7 @@ class FaceRecognitionProcessor:
                 init_or_timestamp = attendance_parts[1].split(".")[0]
 
                 if init_or_timestamp == "init":
-                    self.handle_init_image(bucket_name, object_key, student_id, attendance_id)
+                    self.handle_init_image(student_id, attendance_id)
                 else:
                     self.handle_attendance_image(bucket_name, object_key, student_id, attendance_id)
 
@@ -56,13 +56,10 @@ class FaceRecognitionProcessor:
             LOGGER.error(f"Error processing message: {e}")
             raise
 
-    def handle_init_image(self, bucket_name: str, object_key: str, student_id: str, attendance_id: str) -> None:
+    def handle_init_image(self, student_id: str, attendance_id: str) -> None:
         LOGGER.info(f"Copying init image to {student_id}/init.jpeg")
 
         try:
-            self.s3.copy_object(
-                Bucket=bucket_name, CopySource=f"{bucket_name}/{object_key}", Key=f"{student_id}/init.jpeg"
-            )
             User.objects.filter(id=student_id).update(init_image=True)
             self.update_attendance_record(attendance_id, Attendance.FaceRecognitionStatus.SUCCESS)
         except ClientError as e:
@@ -76,7 +73,7 @@ class FaceRecognitionProcessor:
             face_compare_result = Attendance.FaceRecognitionStatus.SUCCESS
 
         LOGGER.info(f"Face compare result: {face_compare_result}")
-        self.update_attendance_record(attendance_id, face_compare_result)
+        self.update_attendance_record(attendance_id, face_compare_result, object_key)
 
     def compare_face(self, bucket_name: str, init_image: str, target_image: str) -> bool:
         try:
@@ -99,9 +96,10 @@ class FaceRecognitionProcessor:
         except self.rekognition.exceptions.InvalidParameterException:
             return False
 
-    def update_attendance_record(self, attendance_id: str, face_recognition_status: str) -> None:
+    def update_attendance_record(self, attendance_id: str, face_recognition_status: str, object_key: str) -> None:
         try:
             Attendance.objects.filter(id=attendance_id).update(
+                face_image=object_key,
                 face_recognition_status=face_recognition_status,
                 is_present=True if face_recognition_status == Attendance.FaceRecognitionStatus.SUCCESS else False,
             )

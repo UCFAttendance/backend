@@ -191,7 +191,7 @@ class AttendanceCreateSerializer(serializers.Serializer):
                 self.instance, f"{self.instance.id}_{int(self.instance.created_at.timestamp())}"
             )
         else:
-            path = get_face_image_path(self.instance, f"{self.instance.id}_init")
+            path = get_face_image_path(self.instance, "init")
 
         return s3_client.generate_presigned_url(
             ClientMethod="put_object",
@@ -241,7 +241,7 @@ class ImageProcessingCallbackSerializer(serializers.Serializer):
         attendance.face_image = validated_data["face_image"]
         attendance.save()
 
-        # Update init_image status)
+        # Update init_image status
         if "init" in validated_data["face_image"]:
             User.objects.filter(id=attendance.student_id.id).update(init_image=True)
 
