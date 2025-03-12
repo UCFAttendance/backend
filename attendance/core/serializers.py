@@ -189,7 +189,7 @@ class AttendanceCreateSerializer(serializers.Serializer):
         if self.context["request"].user.init_image:
             path = get_face_image_path(self.instance, self.instance.id)
         else:
-            path = get_face_image_path(self.instance, "init")
+            path = get_face_image_path(self.instance, f"{self.instance.id}_init")
 
         return s3_client.generate_presigned_url(
             ClientMethod="put_object",

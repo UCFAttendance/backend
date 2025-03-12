@@ -34,19 +34,18 @@ class FaceRecognitionProcessor:
                 LOGGER.info(f"Processing S3 Record: {bucket_name}/{object_key}")
 
                 # Validate object key format
-                REGEX = r"^\d+\/(init|\d+)\.jpeg$"
-                if not re.match(REGEX, object_key):
+                REGEX = r"^\d+/\d+(_init)?\.jpeg$"
+                match_obj = re.match(REGEX, object_key)
+                if not match_obj:
                     LOGGER.warning(f"Invalid object key format: {object_key}")
                     return
 
                 # Parse the object key
-                parts = object_key.split("/")
-                student_id = parts[0]
-                attendance_parts = parts[1].split("_")
-                attendance_id = attendance_parts[0]
-                init_or_timestamp = attendance_parts[1].split(".")[0]
+                student_id = int(match_obj.group(1))
+                attendance_id = int(match_obj.group(2))
+                is_init = '_init' in object_key
 
-                if init_or_timestamp == "init":
+                if is_init:
                     self.handle_init_image(object_key, student_id, attendance_id)
                 else:
                     self.handle_attendance_image(bucket_name, object_key, student_id, attendance_id)
