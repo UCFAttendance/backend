@@ -48,7 +48,7 @@ class FaceRecognitionProcessor:
                 init_or_timestamp = attendance_parts[1].split(".")[0]
 
                 if init_or_timestamp == "init":
-                    self.handle_init_image(student_id, attendance_id)
+                    self.handle_init_image(object_key, student_id, attendance_id)
                 else:
                     self.handle_attendance_image(bucket_name, object_key, student_id, attendance_id)
 
@@ -56,12 +56,12 @@ class FaceRecognitionProcessor:
             LOGGER.error(f"Error processing message: {e}")
             raise
 
-    def handle_init_image(self, student_id: str, attendance_id: str) -> None:
+    def handle_init_image(self, object_key: str, student_id: str, attendance_id: str) -> None:
         LOGGER.info(f"Copying init image to {student_id}/init.jpeg")
 
         try:
             User.objects.filter(id=student_id).update(init_image=True)
-            self.update_attendance_record(attendance_id, Attendance.FaceRecognitionStatus.SUCCESS)
+            self.update_attendance_record(attendance_id, Attendance.FaceRecognitionStatus.SUCCESS, object_key)
         except ClientError as e:
             LOGGER.error(f"Failed to copy init image: {e}")
             raise
