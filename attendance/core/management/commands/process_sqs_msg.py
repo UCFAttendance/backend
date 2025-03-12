@@ -6,6 +6,7 @@ import time
 from typing import Any, Dict
 
 import boto3
+from botocore.exceptions import ClientError
 from django.core.management.base import BaseCommand
 
 from attendance.core.models import Attendance
@@ -43,10 +44,10 @@ class FaceRecognitionProcessor:
                 # Parse the object key
                 student_id = int(match_obj.group(1))
                 attendance_id = int(match_obj.group(2))
-                is_init = '_init' in object_key
+                is_init = "_init" in object_key
 
                 if is_init:
-                    self.handle_init_image(object_key, student_id, attendance_id)
+                    self.handle_init_image(bucket_name, object_key, student_id, attendance_id)
                 else:
                     self.handle_attendance_image(bucket_name, object_key, student_id, attendance_id)
 
@@ -54,9 +55,17 @@ class FaceRecognitionProcessor:
             LOGGER.error(f"Error processing message: {e}")
             raise
 
-    def handle_init_image(self, object_key: str, student_id: str, attendance_id: str) -> None:
-        User.objects.filter(id=student_id).update(init_image=True)
-        self.update_attendance_record(attendance_id, Attendance.FaceRecognitionStatus.SUCCESS, object_key)
+    def handle_init_image(self, bucket_name, object_key: str, student_id: str, attendance_id: str) -> None:
+        LOGGER.info(f"Copying init image to {student_id}/init.jpeg")
+        try:
+            self.s3.copy_object(
+                Bucket=bucket_name, CopySource=f"{bucket_name}/{object_key}", Key=f"{student_id}/init.jpeg"
+            )
+            User.objects.filter(id=student_id).update(init_image=True)
+            self.update_attendance_record(attendance_id, Attendance.FaceRecognitionStatus.SUCCESS, object_key)
+        except ClientError as e:
+            LOGGER.error(f"Failed to copy init image: {e}")
+            raise
 
     def handle_attendance_image(self, bucket_name: str, object_key: str, student_id: str, attendance_id: str) -> None:
         LOGGER.info(f"Comparing face with {student_id}/init.jpeg")
