@@ -57,14 +57,8 @@ class FaceRecognitionProcessor:
             raise
 
     def handle_init_image(self, object_key: str, student_id: str, attendance_id: str) -> None:
-        LOGGER.info(f"Copying init image to {student_id}/init.jpeg")
-
-        try:
-            User.objects.filter(id=student_id).update(init_image=True)
-            self.update_attendance_record(attendance_id, Attendance.FaceRecognitionStatus.SUCCESS, object_key)
-        except ClientError as e:
-            LOGGER.error(f"Failed to copy init image: {e}")
-            raise
+        User.objects.filter(id=student_id).update(init_image=True)
+        self.update_attendance_record(attendance_id, Attendance.FaceRecognitionStatus.SUCCESS, object_key)
 
     def handle_attendance_image(self, bucket_name: str, object_key: str, student_id: str, attendance_id: str) -> None:
         LOGGER.info(f"Comparing face with {student_id}/init.jpeg")
@@ -109,7 +103,7 @@ class FaceRecognitionProcessor:
 
         except Exception as e:
             LOGGER.error(f"Failed to update attendance record: {e}")
-            raise
+            raise e
 
     def run(self):
         while True:
