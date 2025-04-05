@@ -135,13 +135,12 @@ resource "aws_iam_policy" "backend_task_policy" {
         "Effect" : "Allow"
         "Action" : [
           "s3:ListAllMyBuckets",
-          "s3:CreateBucket",
           "s3:PutBucketOwnershipControls"
         ]
         "Resource" : "*"
       },
       {
-        "Effect" : "Allow"
+        "Effect" : "Allow",
         "Action" : [
           "s3:PutBucketPublicAccessBlock",
           "s3:PutBucketAcl",
@@ -150,8 +149,11 @@ resource "aws_iam_policy" "backend_task_policy" {
           "s3:PutObject",
           "s3:PutObjectAcl",
           "s3:ListBucket"
+        ],
+        "Resource" : [
+          data.aws_s3_bucket.attendance_static_bucket.arn,
+          "${data.aws_s3_bucket.attendance_static_bucket.arn}/*"
         ]
-        "Resource" : data.aws_s3_bucket.attendance_static_bucket.arn
       },
       {
         "Effect" : "Allow"
